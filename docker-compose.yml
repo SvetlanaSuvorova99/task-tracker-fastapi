@@ -14,9 +14,7 @@ services:
     build: .
     depends_on:
       - db
-    environment:
-      DATABASE_URL: postgresql://user:password@db:5432/books
-      LOG_LEVEL: INFO
+    env_file: .env
     ports:
       - "8000:8000"
 

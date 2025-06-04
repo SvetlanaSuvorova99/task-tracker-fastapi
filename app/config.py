@@ -1,17 +1,16 @@
 from pydantic_settings import BaseSettings
-import os
-from dotenv import load_dotenv
 
-load_dotenv(dotenv_path='.env')
 
 class Settings(BaseSettings):
     DATABASE_URL: str = "postgresql://user:password@localhost:5432/books"
     LOG_LEVEL: str = "INFO"
-    JSONBIN_API_KEY: str = os.getenv('JSONBIN_API_KEY')
+    JSONBIN_API_KEY: str
+    JSONBIN_API_URL: str = "https://api.jsonbin.io/v3"
+    OPENLIBRARY_API_URL: str = "https://openlibrary.org"
+    OPENLIBRARY_COVER_URL: str = "https://covers.openlibrary.org/b/id"
 
-    model_config = {
-        "env_file": ".env",
-        "extra": "ignore",  # если вдруг в .env попадёт что-то лишнее
-    }
+    class Config:
+        env_file = ".env"
+        extra = "ignore"
 
 settings = Settings()
