@@ -3,8 +3,14 @@ from typing import List
 from app.schemas.book import Book, BookCreate, BookUpdate
 from app.depends.book_service import get_book_service
 from app.services.book_service import BookService
+from app.depends.external.open_library import get_open_library_client
+from app.external.open_library import OpenLibraryClient
 
 router = APIRouter(prefix="/books", tags=["Books"])
+
+@router.get("/info-by-title/")
+def get_book_info(title: str, open_library_client: OpenLibraryClient = Depends(get_open_library_client)):
+    return open_library_client.get_book_info(title)
 
 @router.get("/", response_model=List[Book])
 def get_books(book_service: BookService = Depends(get_book_service)):
