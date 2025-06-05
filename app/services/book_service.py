@@ -1,19 +1,19 @@
 from typing import List
-from app.repositories.book_repository import BookRepository
 from app.schemas.book import BookCreate, BookUpdate, Book
 from app.core.logger import get_logger
-from app.external.jsonbin import JsonBinClient
 from app.external.open_library import OpenLibraryClient
 from fastapi import HTTPException, status
+from app.repositories.interfaces.book_repository_interface import BookRepositoryInterface
+from app.repositories.jsonbin_repository import JsonBinRepository
 
 logger = get_logger()
 
 class BookService:
-    def __init__(self,
-                 jsonbin_client: JsonBinClient,
-                 open_library_client: OpenLibraryClient,
-                 book_repository: BookRepository):
-        self.jsonbin_client = jsonbin_client
+    def __init__(
+        self,
+        open_library_client: OpenLibraryClient,
+        book_repository: BookRepositoryInterface,
+    ):
         self.open_library = open_library_client
         self.repo = book_repository
 
@@ -31,11 +31,14 @@ class BookService:
         if ol_data:
             logger.info(f"Обогащаем книгу данными из OpenLibrary: {ol_data.get('title')}")
             book_create.description = ol_data.get("description", "")
-            book_create.cover_image = ol_data.get("cover_image", "")
+            book_create.cover = ol_data.get("cover", "")
 
         saved_book = self.repo.add_book(book_create)
-        jsonbin_id = await self.jsonbin_client.save_data(book_create.model_dump())
-        logger.info(f"Книга сохранена на jsonbin.io с ID: {jsonbin_id}")
+
+        if isinstance(self.repo, JsonBinRepository):
+            jsonbin_id = self.repo.client.save_data(book_create.model_dump())
+            logger.info(f"Книга сохранена на jsonbin.io с ID: {jsonbin_id}")
+
         return saved_book
 
     def update_book(self, book_id: int, book_update: BookUpdate) -> Book:

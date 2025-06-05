@@ -1,0 +1,14 @@
+[
+  {
+    "title": "Cвобода",
+    "author": "Генрих Колл",
+    "year": 1878,
+    "genre": "Исторический роман",
+    "pages": 1778,
+    "available": true,
+    "description": "string",
+    "cover": "string",
+    "rating": 0.0,
+    "id": 1
+  }
+]

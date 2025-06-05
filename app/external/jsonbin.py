@@ -1,6 +1,7 @@
 import httpx
 from typing import Dict, Any
-from app.config import settings  # импортируем настройки
+from app.config import settings
+
 
 class JsonBinClient:
     def __init__(self, api_key: str, base_url: str = settings.JSONBIN_API_URL):
@@ -11,18 +12,20 @@ class JsonBinClient:
             "X-Master-Key": self.api_key
         }
 
-    async def save_data(self, data: Dict[str, Any]) -> str:
-        async with httpx.AsyncClient() as client:
-            response = await client.post(
-                f"{self.base_url}/b", json=data, headers=self.headers
-            )
-            response.raise_for_status()
-            return response.json()["metadata"]["id"]
+    def save_data(self, data: Dict[str, Any]) -> str:
+        response = httpx.post(f"{self.base_url}/b", json=data, headers=self.headers)
+        response.raise_for_status()
+        return response.json()["metadata"]["id"]
 
-    async def get_data(self, bin_id: str) -> Dict[str, Any]:
-        async with httpx.AsyncClient() as client:
-            response = await client.get(
-                f"{self.base_url}/b/{bin_id}", headers=self.headers
-            )
-            response.raise_for_status()
-            return response.json()["record"]
+    def get_data(self, bin_id: str) -> Dict[str, Any]:
+        response = httpx.get(f"{self.base_url}/b/{bin_id}/latest", headers=self.headers)
+        response.raise_for_status()
+        return response.json()["record"]
+
+    def update_data(self, bin_id: str, data: Dict[str, Any]) -> None:
+        response = httpx.put(f"{self.base_url}/b/{bin_id}", json=data, headers=self.headers)
+        response.raise_for_status()
+
+
+
+

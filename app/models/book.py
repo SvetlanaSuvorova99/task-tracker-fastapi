@@ -1,16 +1,17 @@
-from sqlalchemy import Column, Integer, String, Boolean, Float
+from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import String
 from app.db.base import Base
 
 class Book(Base):
     __tablename__ = "books"
-    id = Column(Integer, primary_key=True, index=True)
-    title = Column(String, nullable=False)
-    author = Column(String, nullable=False)
-    year = Column(Integer, nullable=False)
-    genre = Column(String, nullable=False)
-    pages = Column(Integer, nullable=False)
-    available = Column(Boolean, default=True)
-    description = Column(String, nullable=True)
-    cover = Column(String, nullable=True)
-    rating = Column(Float, nullable=True)
 
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    title: Mapped[str] = mapped_column(String, nullable=False)
+    author: Mapped[str] = mapped_column(String, nullable=False)
+    year: Mapped[int] = mapped_column(nullable=False)
+    genre: Mapped[str] = mapped_column(String, nullable=False)
+    pages: Mapped[int] = mapped_column(nullable=False)
+    available: Mapped[bool] = mapped_column(default=True)
+    description: Mapped[str | None] = mapped_column(String, nullable=True)
+    cover: Mapped[str | None] = mapped_column(String, nullable=True)
+    rating: Mapped[float | None] = mapped_column(nullable=True)
